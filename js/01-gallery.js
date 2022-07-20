@@ -47,23 +47,27 @@ galleryEl.insertAdjacentHTML('beforeend', createGallery);
 //**********************************addEventListener*******************************************************
 
 galleryEl.addEventListener('click', onGalleryClickImg);
-
+let instance = null;
 function onGalleryClickImg(evt) {
   evt.preventDefault();
   if (evt.target.nodeName !== 'IMG') {
     return;
   }
-  const instance = basicLightbox.create(`
+  instance = basicLightbox.create(
+    `
     <img src="${evt.target.dataset.source}" width="800" height="600">
-`);
+`,
+    {
+      onShow: () => window.addEventListener('keydown', closeEscape),
+      onClose: () => window.removeEventListener('keydown', closeEscape),
+    },
+  );
 
   instance.show();
-  document.addEventListener('keydown', closeEscape);
-  function closeEscape(evt) {
-    if (evt.code === 'Escape') {
-      instance.close();
-      document.removeEventListener('keydown', closeEscape);
-    }
+}
+function closeEscape(evt) {
+  if (evt.code === 'Escape') {
+    instance.close();
   }
 }
 
